@@ -1,60 +1,63 @@
-# DBA Challenge 20240802
+# Bike Stores – Desafio SQL (Marketing & Comercial)
 
+**Resumo:** consultas SQL para responder às métricas pedidas (clientes sem compra, produtos nunca comprados/sem estoque, vendas por marca/loja e funcionários sem pedidos) sobre um **banco provisório** inspirado no esquema Bike Stores.  
+> Ambiente usado: **PostgreSQL + pgAdmin 4** (instância local na porta **5433**).
 
-## Introdução
+---
 
-Nesse desafio trabalharemos utilizando a base de dados da empresa Bike Stores Inc com o objetivo de obter métricas relevantes para equipe de Marketing e Comercial.
+## Como foi pensado (essencial)
+- **Reprodutibilidade:** inclui scripts idempotentes para levantar um banco **mínimo**, garantindo todos os cenários de teste.
+- **Consultas portáveis:** `LEFT JOIN … IS NULL` e/ou `NOT EXISTS` para “nunca comprados”; `GROUP BY … HAVING SUM(...) = 0` para “sem estoque”; agregações comerciais por **loja** e **marca** (pedidos, itens e receita).
+- **Dados de vitrine (seed):** intencionalmente pequenos, focados em validar cada requisito sem ruído.
 
-Com isso, teremos que trabalhar com várioas consultas utilizando conceitos como `INNER JOIN`, `LEFT JOIN`, `RIGHT JOIN`, `GROUP BY` e `COUNT`.
+---
 
-### Antes de começar
- 
-- O projeto deve utilizar a Linguagem específica na avaliação. Por exempo: SQL, T-SQL, PL/SQL e PSQL;
-- Considere como deadline da avaliação a partir do início do teste. Caso tenha sido convidado a realizar o teste e não seja possível concluir dentro deste período, avise a pessoa que o convidou para receber instruções sobre o que fazer.
-- Documentar todo o processo de investigação para o desenvolvimento da atividade (README.md no seu repositório); os resultados destas tarefas são tão importantes do que o seu processo de pensamento e decisões à medida que as completa, por isso tente documentar e apresentar os seus hipóteses e decisões na medida do possível.
- 
- 
+## Banco provisório (seed mínimo)
+- **DB:** `bike_stores` (local, **5433**).
+- **Cenários embutidos:**
+  - `products`: 3 itens — o **produto 3** não aparece em `order_items` nem em `stocks` → testa “nunca comprado” e “sem estoque”.
+  - `customers`: 3 clientes — o **cliente 3** não tem pedidos → “clientes sem compra”.
+  - `staffs`: 3 pessoas — o **staff 1** não tem pedidos → “funcionários sem pedidos”.
+  - `orders/order_items`: 2 pedidos simples (um por loja), com **desconto** em um item para validar **receita**.
 
-## O projeto
+---
 
-- Criar as consultas utilizando a linguagem escolhida;
-- Entregar o código gerado do Teste.
+## Execução rápida com **pgAdmin 4**
+1. **Criar DB:** *Object → Create → Database…* → `bike_stores` (UTF8).  
+2. **Query Tool** no DB `bike_stores` e rodar, nesta ordem:
+   - `sql/init/02_schema_fixed.sql`
+   - `sql/init/03_indexes.sql`
+   - `sql/init/04_seed_minimal.sql`
+3. (Opcional) Rodar as **consultas** em `sql/queries/*.sql`.
 
-### Modelo de Dados:
+> Observação: a instância local está configurada na **porta 5433**; ajuste conforme seu ambiente.
 
-Para entender o modelo, revisar o diagrama a seguir:
+---
 
-![<img src="samples/model.png" height="500" alt="Modelo" title="Modelo"/>](samples/model.png)
+## Estrutura essencial
+sql/
+init/
+01_create_database.sql
+02_schema_fixed.sql
+03_indexes.sql
+04_seed_minimal.sql
+queries/
+clientes_sem_compras.sql
+produtos_nunca_comprados.sql
+produtos_sem_estoque.sql
+vendas_por_marca_por_loja.sql
+funcionarios_sem_pedidos.sql
 
+yaml
+Copy code
 
-## Selects
+---
 
-Construir as seguintes consultas:
+## Notas rápidas
+- **Dados são de exemplo** e **mínimos**, apenas para validar as consultas do desafio.
+- Não versione senhas/credenciais; mantenha `.env/.pgpass` fora do repositório.
+- Qualquer troca de porta/usuário pode ser ajustada diretamente no pgAdmin.
 
-- Listar todos Clientes que não tenham realizado uma compra;
-- Listar os Produtos que não tenham sido comprados
-- Listar os Produtos sem Estoque;
-- Agrupar a quantidade de vendas que uma determinada Marca por Loja. 
-- Listar os Funcionarios que não estejam relacionados a um Pedido.
+---
 
-## Readme do Repositório
-
-- Deve conter o título do projeto
-- Uma descrição sobre o projeto em frase
-- Deve conter uma lista com linguagem, framework e/ou tecnologias usadas
-- Como instalar e usar o projeto (instruções)
-- Não esqueça o [.gitignore](https://www.toptal.com/developers/gitignore)
-- Se está usando github pessoal, referencie que é um challenge by coodesh:  
-
->  This is a challenge by [Coodesh](https://coodesh.com/)
-
-## Finalização e Instruções para a Apresentação
-
-1. Adicione o link do repositório com a sua solução no teste
-2. Verifique se o Readme está bom e faça o commit final em seu repositório;
-3. Envie e aguarde as instruções para seguir. Caso o teste tenha apresentação de vídeo, dentro da tela de entrega será possível gravar após adicionar o link do repositório. Sucesso e boa sorte. =)
-
-
-## Suporte
-
-Para tirar dúvidas sobre o processo envie uma mensagem diretamente a um especialista no chat da plataforma. 
+**This is a challenge by Coodesh**
